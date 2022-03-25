@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const {isDate,isPostalCode} = require("validator")
+mongoose.Promise = global.Promise;
+
 const sitesSchema = new mongoose.Schema({
     landlord_id:{
         type:mongoose.Schema.Types.ObjectId,
@@ -51,8 +53,9 @@ const sitesSchema = new mongoose.Schema({
         required:[true,'Please enter deposit amount']
     },
 
-    isOccupied:{
-        type:Boolean,
+    status:{
+        type:String,
+        default:"0"
     },
 
     charges_param:
@@ -79,24 +82,15 @@ const sitesSchema = new mongoose.Schema({
         type:Array
     },
 
-    date:{
-        type:Date,
-        required:[true,'Please generate date'],
-        default:Date.now
-    },
-
     history:{
         type:Array
     },
-    current_tenant:{
+    tenant:{
         type:mongoose.Schema.Types.ObjectId,
-        required:true
-    },
-    requested_tenant:{
-        type:mongoose.Schema.Types.ObjectId,
-        required:true
+        ref:"Tenant",
     }
+    
 
 },{timestamps:true});
 
-module.exports = mongoose.model("Sites",sitesSchema)
+module.exports = mongoose.models.Site || mongoose.model("Site",sitesSchema)

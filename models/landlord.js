@@ -1,85 +1,107 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt")
-const {isEmail,isDate} = require("validator")
-import "../db/db"
+const bcrypt = require("bcrypt");
+const { isEmail, isDate, isPostalCode } = require("validator");
 
-const landlordSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        required:[true,'Please enter a name'],
-        min:3,
-        max:25
+const landlordSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please enter a name"],
+      min: 3,
+      max: 25,
     },
-    username:{
-        type:String,
-        required:[true,'Please enter a username'],
-        min:3,
-        max:25,
-        unique:true
+    username: {
+      type: String,
+
+      min: 3,
+      max: 25,
+      unique: true,
     },
-    email:{
-        type:String,
-        required:[true,'Please enter a email'],
-        unique:true,
-        validate:[isEmail,'Please Enter a valid email']
+    email: {
+      type: String,
+      required: [true, "Please enter a email"],
+      unique: true,
+      validate: [isEmail, "Please Enter a valid email"],
     },
-    contact:{
-        type:Number,
-        required:[true,'Please enter your contact number']
+    contact: {
+      type: Number,
     },
-    password:{
-        type:String,
-        required:[true,'Please enter your password'],
-        min:5
+    password: {
+      type: String,
+      required: [true, "Please enter your password"],
+      min: 5,
     },
-    DOB:{
-        type:Date,
-        required:true,
-        validate:[isDate,'Please enter a valid date']
+    DOB: {
+      type: Date,
+
+      validate: [isDate, "Please enter a valid date"],
     },
-    address:{
-        first_line:String,
-        city:String,
-        state:String,
-        Country:String,
-        pincode:Number,
-        landmark:String,
-        required:true
+    address: {
+      first_line: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      Country: {
+        type: String,
+      },
+      pincode: {
+        type: String,
+      },
+      landmark: {
+        type: String,
+        //not setting required as true, keeping it optional
+      },
     },
-    occupation:{
-        type:String,
-        required:[true,'Please enter your occupation']
+    occupation: {
+      type: String,
     },
-    verification:{
-        type:String,
-        enum:['Aadhar','VoterID','PanCard'],
-        required:[true,'Please enter your verification id']
+    verification: {
+      type: String,
+      enum: ["Aadhar", "VoterID", "PanCard"],
     },
-    account:{
-        acc_num:String,
-        ifsc:String,
-        required:true
-    }
-},{timestamps:true});
+    account: {
+      acc_num: {
+        type: String,
+      },
+      ifsc: {
+        type: String,
+      },
+    },
+    site_list: {
+      type: Array,
+    },
+  },
+  { timestamps: true }
+);
 
 //when landlord updates password
-landlordSchema.pre('save',(next)=>{
+// landlordSchema.pre('save',(next)=>{
 
-    if(!this.isModified('password')){
-        return next();
-    }
-    const user = this;
-    bcrypt.genSalt(10, function(err, salt){
-        if (err){ return next(err) }
+//     if(!this.isModified('password')){
+//         return next();
+//     }
+//     const user = this;
+//     bcrypt.genSalt(10, function(err, salt){
+//         if (err){ return next(err) }
 
-        bcrypt.hash(user.password, salt, null, function(err, hash){
-            if(err){return next(err)}
+//         bcrypt.hash(user.password, salt, null, function(err, hash){
+//             if(err){return next(err)}
 
-            user.password = hash;
-            next();
-        })
-    })
+//             else if(user.password == hash){
+//                 return next("new password cannot be same as previous password")
+//             }
 
-});
+//             user.password = hash;
+//             next();
+//         })
+//     })
 
-module.exports = mongoose.model("Landlord",landlordSchema);
+// });
+
+module.exports =
+  mongoose.models.Landlord || mongoose.model("Landlord", landlordSchema);
